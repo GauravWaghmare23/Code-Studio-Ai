@@ -24,3 +24,17 @@ export const createProjectService = async({name, userId}) =>{
     return newProject;
 
 }
+
+export const getAllProjectService = async({userId}) => {
+    if(!userId){
+        throw new Error("User ID is not authorized, please login");
+    }
+
+    try {
+        console.log(`Fetching projects for user ID: ${userId}`);
+        const projects = await ProjectModel.find({ users: userId }).populate("users", "email");
+        return projects;
+    } catch (error) {
+        throw new Error(`Failed to fetch projects: ${error.message}`);
+    }
+}

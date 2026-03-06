@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createProject } from '../controllers/project.controller.js';
+import { createProject, getAllProjects } from '../controllers/project.controller.js';
 import { body } from 'express-validator';
 import { authenticateJWT } from '../middlewares/auth.middleware.js';
 
@@ -10,5 +10,6 @@ router.post("/create",
     authenticateJWT,
     createProject);
 
+router.get("/list", authenticateJWT, getAllProjects);
 
 export default router;

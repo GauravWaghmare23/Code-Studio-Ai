@@ -21,6 +21,7 @@ export const registerUser = async (req, res) => {
         const user = await createUserService({email, password});
 
         const keys = await redisClient.keys(`users:all:*`);
+        
         if (keys.length > 0) {
             await redisClient.del(keys);
         }

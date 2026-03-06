@@ -77,7 +77,7 @@ const Register = () => {
         {/* Branding */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-wide bg-linear-to-r from-gray-200 to-white bg-clip-text text-transparent">
-            DEVIKA
+            Code Studio AI
           </h1>
           <p className="text-gray-500 mt-2 text-sm">
             Create your developer account
