@@ -10,6 +10,8 @@ import helmet from "helmet";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
     'http://localhost:5173',
     'https://devika-1-jxbb.onrender.com'
