@@ -24,7 +24,7 @@ function App() {
   if (user === undefined) {
     return (
       <div className="h-screen flex items-center justify-center bg-black text-white">
-        Initializing Devika...
+        Initializing Code Studio AI...
       </div>
     );
   }
