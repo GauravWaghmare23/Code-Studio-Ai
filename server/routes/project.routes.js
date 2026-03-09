@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addUsersToProject,
   createProject,
+  deleteProject,
   getAllProjects,
 } from "../controllers/project.controller.js";
 import { body } from "express-validator";
@@ -33,5 +34,7 @@ router.put(
     authenticateJWT,
   addUsersToProject,
 );
+
+router.delete("/delete/:projectId", authenticateJWT, deleteProject);
 
 export default router;

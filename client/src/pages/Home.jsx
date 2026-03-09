@@ -14,15 +14,15 @@ const Home = () => {
   const navigate = useNavigate();
 
   const fetchProjects = () => {
-  axiosInstance
-    .get("/projects/list")
-    .then((response) => {
-      setProjects(response.data.data);
-    })
-    .catch((error) => {
-      console.error("Failed to fetch projects:", error);
-    });
-};
+    axiosInstance
+      .get("/projects/list")
+      .then((response) => {
+        setProjects(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch projects:", error);
+      });
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -51,6 +51,17 @@ const Home = () => {
       });
   }
 
+  function deleteProjectHandler(projectId) {
+    axiosInstance
+      .delete(`/projects/delete/${projectId}`)
+      .then(() => {
+        fetchProjects();
+      })
+      .catch((error) => {
+        console.error("Failed to delete project:", error);
+      });
+  }
+
   function logoutHandler() {
     localStorage.removeItem("token");
     setUser(null);
@@ -72,14 +83,14 @@ const Home = () => {
           }}
         />
 
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 blur-[200px] rounded-full" />
-        <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-indigo-900/20 blur-[180px] rounded-full" />
+        <div className="absolute -top-40 -left-40 w-125 h-125 bg-white/5 blur-[200px] rounded-full" />
+        <div className="absolute bottom-0 right-0 w-112.5 h-112.5 bg-indigo-900/20 blur-[180px] rounded-full" />
       </div>
 
       {/* Header */}
       <div className="relative z-10 flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-200 to-white bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-gray-200 to-white bg-clip-text text-transparent">
             Code Studio AI
           </h1>
 
@@ -88,7 +99,7 @@ const Home = () => {
 
         <button
           onClick={logoutHandler}
-          className="px-5 py-2 rounded-lg bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+          className="px-5 py-2 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
         >
           Logout
         </button>
@@ -101,7 +112,7 @@ const Home = () => {
             setError("");
             setModalOpen(true);
           }}
-          className="px-6 py-3 rounded-lg bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 transition shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+          className="px-6 py-3 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 transition shadow-[0_0_15px_rgba(255,255,255,0.1)]"
         >
           Create Project
         </button>
@@ -120,8 +131,29 @@ const Home = () => {
           projects.map((project) => (
             <div
               key={project._id}
-              className="p-6 rounded-xl bg-black/70 border border-white/10 hover:border-white/20 transition"
+              className="relative p-6 rounded-xl bg-black/70 border border-white/10 hover:border-white/20 transition"
             >
+              {/* Delete Button */}
+              <button
+                onClick={() => deleteProjectHandler(project._id)}
+                className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 7h12M9 7v12m6-12v12M5 7l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14M9 7V4h6v3"
+                  />
+                </svg>
+              </button>
+
               <h2 className="text-lg font-semibold mb-2">{project.name}</h2>
 
               <p className="text-gray-400 text-sm">
@@ -168,7 +200,7 @@ const Home = () => {
                 ${
                   loading
                     ? "bg-gray-700 cursor-not-allowed"
-                    : "bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+                    : "bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
                 }`}
               >
                 {loading ? "Creating..." : "Create Project"}

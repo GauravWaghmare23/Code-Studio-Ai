@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
-import { createProjectService, getAllProjectService } from "../services/project.service.js";
+import { createProjectService, deleteProjectService, getAllProjectService } from "../services/project.service.js";
 import redisClient from "../services/redis.service.js";
+import mongoose from "mongoose";
 
 export const createProject = async(req, res) => {
 
@@ -134,6 +135,44 @@ export const addUsersToProject = async(req,res) => {
         return res.status(400).json({
             success: false,
             message: `Failed to add users to project: ${error.message}`,
+            error: error.message
+        });
+    }
+}
+
+export const deleteProject = async(req,res) => {
+    try {
+        const {projectId} = req.params;
+
+        const userId = req.user.id;
+
+        const deletedProject = await deleteProjectService({projectId, userId});
+
+         const keys = await redisClient.keys(`projects:all:${userId}`);
+
+        if(keys.length > 0){
+            await redisClient.del(keys);
+        }
+
+        if (!deletedProject) {
+            return res.status(404).json({
+                success: false,
+                message: "Project not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Project deleted successfully",
+            data: deletedProject
+        });
+
+    } catch (error) {
+
+        console.error(`Failed to delete project: ${error.message}`);
+        return res.status(400).json({
+            success: false,
+            message: `Failed to delete project: ${error.message}`,
             error: error.message
         });
     }
