@@ -22,7 +22,7 @@ router.post(
 router.get("/list", authenticateJWT, getAllProjects);
 
 router.put(
-  "/addUsers",
+  "/add-user",
   body("projectId").isString().withMessage("Project ID is required"),
   body("users")
     .isArray({ min: 1 })
