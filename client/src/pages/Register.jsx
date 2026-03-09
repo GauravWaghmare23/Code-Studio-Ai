@@ -138,7 +138,7 @@ const Register = () => {
             type="submit"
             className="w-full py-2.5 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white font-semibold transition duration-200 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
           >
-            Login
+            Register
           </button>
         </form>
 

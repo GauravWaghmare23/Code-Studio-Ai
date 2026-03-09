@@ -83,7 +83,7 @@ export const addUsersToProjectService = async ({ projectId, userId, users }) => 
             }
         },
         { new: true }
-    );
+    ).populate("users", "email");
 
     return updatedProject;
 };
@@ -109,7 +109,7 @@ export const deleteProjectService = async ({projectId, userId}) => {
     const project = await ProjectModel.findOne({
         _id: projectId,
         users: userId
-    });
+    }).populate("users", "email");
 
     if (!project) {
         throw new Error("Project not found or user is not a member");
@@ -118,4 +118,33 @@ export const deleteProjectService = async ({projectId, userId}) => {
     const deletedProject = await ProjectModel.findByIdAndDelete(projectId);
 
     return deletedProject;
+};
+
+export const getProjectByIdService = async({projectId, userId}) => {
+
+    if (!projectId) {
+        throw new Error("Project ID is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+        throw new Error("Invalid Project ID");
+    }
+    if (!userId) {
+        throw new Error("User not authorized, please login");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        throw new Error("Invalid User ID");
+    }
+
+    const project = await ProjectModel.findOne({
+        _id: projectId,
+        users: userId
+    }).populate("users", "email");
+
+    if (!project) {
+        throw new Error("Project not found or user is not a member");
+    }
+
+    return project;
 }

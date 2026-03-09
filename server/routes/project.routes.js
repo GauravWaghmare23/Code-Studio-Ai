@@ -4,9 +4,11 @@ import {
   createProject,
   deleteProject,
   getAllProjects,
+  getProjectById
 } from "../controllers/project.controller.js";
 import { body } from "express-validator";
 import { authenticateJWT } from "../middlewares/auth.middleware.js";
+
 
 const router = Router();
 
@@ -23,7 +25,7 @@ router.post(
 router.get("/list", authenticateJWT, getAllProjects);
 
 router.put(
-  "/add-user",
+  "/add-users",
   body("projectId").isString().withMessage("Project ID is required"),
   body("users")
     .isArray({ min: 1 })
@@ -36,5 +38,7 @@ router.put(
 );
 
 router.delete("/delete/:projectId", authenticateJWT, deleteProject);
+
+router.get("/get-project/:projectId", authenticateJWT, getProjectById);
 
 export default router;

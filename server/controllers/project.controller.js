@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { createProjectService, deleteProjectService, getAllProjectService } from "../services/project.service.js";
+import { addUsersToProjectService, createProjectService, deleteProjectService, getAllProjectService, getProjectByIdService } from "../services/project.service.js";
 import redisClient from "../services/redis.service.js";
 import mongoose from "mongoose";
 
@@ -116,6 +116,12 @@ export const addUsersToProject = async(req,res) => {
         
         const updatedProject = await addUsersToProjectService({projectId, userId, users});
 
+        const keys = await redisClient.keys(`projects:all:${userId}`);
+
+        if(keys.length > 0){
+            await redisClient.del(keys);
+        }
+
         if (!updatedProject) {
             return res.status(400).json({
                 success: false,
@@ -177,3 +183,34 @@ export const deleteProject = async(req,res) => {
         });
     }
 }
+
+export const getProjectById = async (req,res) => {
+    try {
+        const {projectId} = req.params;
+        const userId = req.user.id;
+
+        const project = await getProjectByIdService({projectId, userId});
+
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: "Project not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Project fetched successfully",
+            data: project
+        });
+
+    } catch (error) {
+        console.error(`Failed to fetch project: ${error.message}`);
+        return res.status(400).json({
+            success: false,
+            message: `Failed to fetch project: ${error.message}`,
+            error: error.message
+        });
+    }
+}
+   
