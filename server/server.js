@@ -4,13 +4,88 @@ dotenv.config();
 import http from "http";
 import app from "./app.js";
 import connect from "./config/dbConnect.js";
+import jwt from "jsonwebtoken";
+import { Server } from "socket.io";
+import mongoose from "mongoose";
+import ProjectModel from "./models/project.model.js";
 
 connect();
 
 const server = http.createServer(app);
 
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.use(async (socket, next) => {
+  try {
+    const token =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.authorization?.split(" ")[1];
+    const projectId = socket.handshake.query?.projectId;
+
+    if (!projectId) {
+      return next(new Error("Project ID is required"));
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return next(new Error("Invalid Project ID"));
+    }
+
+    const project = await ProjectModel.findById(projectId);
+
+    socket.project = project;
+
+    if (!token) {
+      return next(new Error("Authentication error"));
+    }
+
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decodedToken) {
+      return next(new Error("Authentication error"));
+    }
+
+    socket.user = decodedToken;
+
+    next();
+  } catch (error) {
+    next(new Error("Authentication error"));
+  }
+});
+
+io.on("connection", (socket) => {
+
+  console.log("a user connected : " + socket.id);
+
+  socket.join(socket.project._id.toString());
+
+  socket.on("project-message", (data) => {
+
+    const messagePayload = {
+      message: data.message,
+      sender: {
+        id: socket.user.id,
+        email: socket.user.email,
+      },
+    };
+
+    console.log("Received message:", messagePayload);
+
+    socket.broadcast
+      .to(socket.project._id.toString())
+      .emit("project-message", messagePayload);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected : " + socket.id);
+  });
+});
+
 const port = process.env.PORT || 4000;
 
 server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

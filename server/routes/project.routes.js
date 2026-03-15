@@ -4,7 +4,8 @@ import {
   createProject,
   deleteProject,
   getAllProjects,
-  getProjectById
+  getProjectById,
+  removeUserFromProject
 } from "../controllers/project.controller.js";
 import { body } from "express-validator";
 import { authenticateJWT } from "../middlewares/auth.middleware.js";
@@ -35,6 +36,14 @@ router.put(
     .withMessage("Each user ID must be a string"),
     authenticateJWT,
   addUsersToProject,
+);
+
+router.put(
+  "/remove-user",
+  body("projectId").isString().withMessage("Project ID is required"),
+  body("userId").isString().withMessage("User ID is required"),
+  authenticateJWT,
+  removeUserFromProject,
 );
 
 router.delete("/delete/:projectId", authenticateJWT, deleteProject);

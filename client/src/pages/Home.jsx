@@ -90,18 +90,18 @@ const Home = () => {
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
 
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-200 to-white bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-200 to-white bg-clip-text text-transparent">
             Code Studio AI
           </h1>
 
           <p className="text-gray-400 text-sm mt-1">
-            Welcome, {user?.email}
+            Welcome, {user?.email} 
           </p>
         </div>
 
         <button
           onClick={logoutHandler}
-          className="px-5 py-2 rounded-lg bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+          className="px-5 py-2 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
         >
           Logout
         </button>
@@ -114,7 +114,7 @@ const Home = () => {
             setError("");
             setModalOpen(true);
           }}
-          className="px-6 py-3 rounded-lg bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+          className="px-6 py-3 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
         >
           Create Project
         </button>
@@ -143,14 +143,15 @@ const Home = () => {
             >
 
               {/* DELETE BUTTON */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteProjectHandler(project._id);
-                }}
-                className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
-              >
-                <svg
+              {project.owner?._id === user?.id && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteProjectHandler(project._id);
+                  }}
+                  className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
+                >
+                  <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5"
                   fill="none"
@@ -165,10 +166,15 @@ const Home = () => {
                   />
                 </svg>
               </button>
+              )}
 
               <h2 className="text-lg font-semibold mb-2">
                 {project.name}
               </h2>
+
+              <p className="text-gray-400 text-xs mb-1">
+                Owner: {project.owner?.email || "Unknown"}
+              </p>
 
               <p className="text-gray-400 text-sm">
                 Members: {project.users?.length}
@@ -228,7 +234,7 @@ const Home = () => {
                 className={`w-full py-2.5 rounded-lg font-semibold transition ${
                   loading
                     ? "bg-gray-700 cursor-not-allowed"
-                    : "bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+                    : "bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
                 }`}
               >
                 {loading ? "Creating..." : "Create Project"}

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../config/axios";
+import { useEffect } from "react";
+import { initializeSocket, sendMessage } from "../config/socket";
+import { useContext } from "react";
+import { UserContext } from './../context/UserContext';
 
 const Project = () => {
   const location = useLocation();
@@ -16,6 +20,8 @@ const Project = () => {
   const [search, setSearch] = useState("");
   const [addUsers, setAddUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
+  const {user} = useContext(UserContext);
+  const isProjectOwner = projectData?.owner?._id === user?.id;
 
   function usersHandler() {
     axiosInstance
@@ -31,54 +37,80 @@ const Project = () => {
 
   function selectUsersHandler(userId) {
     setAddUsers((prev) => {
-        const newSet = new Set(prev);
-        if(newSet.has(userId)){
-            newSet.delete(userId);
-        }else{
-            newSet.add(userId);
-        }
-        console.log(newSet);
-        return newSet;
+      const newSet = new Set(prev);
+      if (newSet.has(userId)) {
+        newSet.delete(userId);
+      } else {
+        newSet.add(userId);
+      }
+      console.log(newSet);
+      return newSet;
     });
   }
 
-  function addCollaboratorHandler(){
-    axiosInstance.put("/projects/add-users", {
+  function addCollaboratorHandler() {
+    axiosInstance
+      .put("/projects/add-users", {
         projectId: projectData._id,
-        users:Array.from(addUsers)
-    }).then(res => {
+        users: Array.from(addUsers),
+      })
+      .then((res) => {
         if (res.data && res.data.data) {
-            setProjectData(res.data.data);
+          setProjectData(res.data.data);
         }
         setAddUsers(new Set());
         setShowUserModal(false);
-    }).catch(err => {
+      })
+      .catch((err) => {
         console.log(err);
         alert("Failed to add users");
-    });
+      });
   }
 
-  function sendMessage(e) {
+  function removeCollaboratorHandler(removeUserId) {
+    axiosInstance
+      .put("/projects/remove-user", {
+        projectId: projectData._id,
+        userId: removeUserId,
+      })
+      .then((res) => {
+        if (res.data && res.data.data) {
+          setProjectData(res.data.data);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to remove collaborator");
+      });
+  }
+
+  function sendMessagetoServer(e) {
     e.preventDefault();
+    console.log(user);
 
-    if (!message.trim()) return;
+    sendMessage("project-message",{
+      message,
+      sender:{
+        id: user.id,
+        email: user.email,
+      }
+    })
 
-    const newMessage = {
-      text: message,
-      mine: true,
-    };
-
-    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
   }
 
   const filteredUsers = users.filter((user) =>
-    user.email.toLowerCase().includes(search.toLowerCase())
+    user.email.toLowerCase().includes(search.toLowerCase()),
   );
+
+  useEffect(() => {
+    if (projectData?._id) {
+      initializeSocket(projectData._id);
+    }
+  }, [projectData]);
 
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">
-
       {/* MEMBERS SIDEBAR */}
       <div
         className={`fixed top-0 left-0 h-full w-[25%] bg-black border-r border-white/10 transform transition-transform duration-300 z-20
@@ -90,16 +122,20 @@ const Project = () => {
 
           <div className="flex items-center gap-3">
             {/* Add Collaborator */}
-            <button
-              onClick={() => {
-                setShowUserModal(true);
-                usersHandler();
-              }}
-              className="text-gray-400 hover:text-white"
-              title="Add collaborator"
-            >
-              ➕
-            </button>
+            {isProjectOwner ? (
+              <button
+                onClick={() => {
+                  setShowUserModal(true);
+                  usersHandler();
+                }}
+                className="text-gray-400 hover:text-white"
+                title="Add collaborator"
+              >
+                ➕
+              </button>
+            ) : (
+              <span className="text-gray-400 text-xs">Owner only</span>
+            )}
 
             {/* Close */}
             <button
@@ -113,12 +149,20 @@ const Project = () => {
 
         {/* Members List */}
         <div className="p-4 space-y-3">
-          {projectData.users?.map((user) => (
+          {projectData.users?.map((member) => (
             <div
-              key={user._id}
-              className="p-2 rounded bg-gray-900 border border-white/10 text-sm"
+              key={member._id}
+              className="flex items-center justify-between p-2 rounded bg-gray-900 border border-white/10 text-sm"
             >
-              {user.email}
+              <span>{member.email}</span>
+              {isProjectOwner && member._id !== user?.id && (
+                <button
+                  onClick={() => removeCollaboratorHandler(member._id)}
+                  className="text-red-400 hover:text-red-300 text-xs"
+                >
+                  Remove
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -143,9 +187,7 @@ const Project = () => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex ${
-                msg.mine ? "justify-end" : "justify-start"
-              }`}
+              className={`flex ${msg.mine ? "justify-end" : "justify-start"}`}
             >
               <div
                 className={`px-3 py-2 rounded-lg text-sm max-w-[70%]
@@ -159,7 +201,7 @@ const Project = () => {
 
         {/* Message Input */}
         <form
-          onSubmit={sendMessage}
+        onSubmit={sendMessagetoServer}
           className="p-3 border-t border-white/10 flex gap-2"
         >
           <input
@@ -192,8 +234,7 @@ const Project = () => {
       {/* ADD USER MODAL */}
       {showUserModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-black border border-white/10 rounded-lg w-[400px] p-6">
-
+          <div className="bg-black border border-white/10 rounded-lg w-100 p-6">
             {/* Modal Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Add Collaborator</h2>
@@ -216,17 +257,21 @@ const Project = () => {
                 className="flex-1 px-3 py-2 rounded bg-gray-900 border border-white/10 text-sm focus:outline-none"
               />
 
-              <button
-              onClick={()=>addCollaboratorHandler()}
-                disabled={addUsers.size === 0}
-                className={`px-4 py-2 text-sm rounded ${
-                  addUsers.size === 0
-                    ? "bg-gray-700 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-500"
-                }`}
-              >
-                Add ({addUsers.size})
-              </button>
+              {isProjectOwner ? (
+                <button
+                  onClick={() => addCollaboratorHandler()}
+                  disabled={addUsers.size === 0}
+                  className={`px-4 py-2 text-sm rounded ${
+                    addUsers.size === 0
+                      ? "bg-gray-700 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-500"
+                  }`}
+                >
+                  Add ({addUsers.size})
+                </button>
+              ) : (
+                <div className="text-xs text-red-300">Only project owner can add collaborators.</div>
+              )}
             </div>
 
             {/* User List */}
@@ -253,11 +298,9 @@ const Project = () => {
                 );
               })}
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };
