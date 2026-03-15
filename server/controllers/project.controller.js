@@ -128,7 +128,6 @@ export const addUsersToProject = async (req, res) => {
 
     await redisClient.del(`projects:all:${userId}`);
 
-    // clear cache for all collaborators added
     for (const id of users) {
       await redisClient.del(`projects:all:${id}`);
     }
@@ -169,10 +168,7 @@ export const removeUserFromProject = async (req, res) => {
 
     await redisClient.del(`projects:all:${userId}`);
 
-    // clear cache for all collaborators removed
-    for (const id of users) {
-      await redisClient.del(`projects:all:${id}`);
-    }
+    await redisClient.del(`projects:all:${removeUserId}`);
 
     return res.status(200).json({
       success: true,
