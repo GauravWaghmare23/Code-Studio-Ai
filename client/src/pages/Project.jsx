@@ -5,10 +5,12 @@ import { useEffect } from "react";
 import {
   initializeSocket,
   recieveMessage,
+  removeListener,
   sendMessage,
 } from "../config/socket";
 import { useContext } from "react";
 import { UserContext } from "./../context/UserContext";
+import { useRef } from "react";
 
 const Project = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const Project = () => {
   const [addUsers, setAddUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
   const { user } = useContext(UserContext);
+    const messagesEndRef = useRef(null);
   const isProjectOwner = projectData?.owner?._id === user?.id;
 
   function usersHandler() {
@@ -123,22 +126,28 @@ const Project = () => {
     if (projectData?._id) {
       initializeSocket(projectData._id);
 
-      const listener = (data)=>{
-        setMessages((prev)=>[
-          ...prev,{
-            text: data.message,
-            sender: data.sender,
-            mine: data.sender.id === user.id,
-          }
-        ]);
-      };
-      recieveMessage("project-message", listener);
+      const listener = (data) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        text: data.message,
+        sender: data.sender,
+        mine: data.sender.id === user.id,
+      },
+    ]);
+  };
 
-      return () => {
-        window.socket?.off("project-message", listener);
-      };
+  recieveMessage("project-message", listener);
+
+  return () => {
+    removeListener("project-message", listener);
+  };
     }
-  }, [projectData, user]);
+  }, [projectData._id]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">
@@ -200,7 +209,6 @@ const Project = () => {
       </div>
 
       {/* CHAT PANEL */}
-      {/* CHAT PANEL */}
       <div className="w-[25%] border-r border-white/10 flex flex-col bg-black/60 backdrop-blur-md">
         {/* Chat Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/80">
@@ -220,7 +228,7 @@ const Project = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4 scrollbar-hide">
           {messages.length === 0 && (
             <div className="text-center text-gray-500 text-sm mt-10">
               No messages yet. Start the conversation 🚀
@@ -266,6 +274,7 @@ const Project = () => {
               </div>
             );
           })}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}

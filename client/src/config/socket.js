@@ -22,3 +22,7 @@ export const sendMessage = (eventName, data) => {
 export const recieveMessage = (eventName, callBack) => {
     socketInstance.on(eventName, callBack);
 }
+
+export const removeListener = (eventName, callback) => {
+  socketInstance?.off(eventName, callback);
+};
