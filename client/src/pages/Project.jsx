@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../config/axios";
 import { useEffect } from "react";
-import { initializeSocket, sendMessage } from "../config/socket";
+import {
+  initializeSocket,
+  recieveMessage,
+  sendMessage,
+} from "../config/socket";
 import { useContext } from "react";
-import { UserContext } from './../context/UserContext';
+import { UserContext } from "./../context/UserContext";
 
 const Project = () => {
   const location = useLocation();
@@ -20,7 +24,7 @@ const Project = () => {
   const [search, setSearch] = useState("");
   const [addUsers, setAddUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const isProjectOwner = projectData?.owner?._id === user?.id;
 
   function usersHandler() {
@@ -88,13 +92,25 @@ const Project = () => {
     e.preventDefault();
     console.log(user);
 
-    sendMessage("project-message",{
+    sendMessage("project-message", {
       message,
-      sender:{
+      sender: {
         id: user.id,
         email: user.email,
-      }
-    })
+      },
+    });
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        text: message,
+        sender: {
+          id: user.id,
+          email: user.email,
+        },
+        mine: true,
+      },
+    ]);
 
     setMessage("");
   }
@@ -106,8 +122,23 @@ const Project = () => {
   useEffect(() => {
     if (projectData?._id) {
       initializeSocket(projectData._id);
+
+      const listener = (data)=>{
+        setMessages((prev)=>[
+          ...prev,{
+            text: data.message,
+            sender: data.sender,
+            mine: data.sender.id === user.id,
+          }
+        ]);
+      };
+      recieveMessage("project-message", listener);
+
+      return () => {
+        window.socket?.off("project-message", listener);
+      };
     }
-  }, [projectData]);
+  }, [projectData, user]);
 
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">
@@ -169,10 +200,16 @@ const Project = () => {
       </div>
 
       {/* CHAT PANEL */}
-      <div className="w-[25%] border-r border-white/10 flex flex-col relative">
+      {/* CHAT PANEL */}
+      <div className="w-[25%] border-r border-white/10 flex flex-col bg-black/60 backdrop-blur-md">
         {/* Chat Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="font-semibold">{project.name}</h2>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/80">
+          <div>
+            <h2 className="font-semibold text-sm">{project.name}</h2>
+            <p className="text-xs text-gray-500">
+              {projectData.users?.length} members
+            </p>
+          </div>
 
           <button
             onClick={() => setShowMembers(true)}
@@ -183,41 +220,81 @@ const Project = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${msg.mine ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`px-3 py-2 rounded-lg text-sm max-w-[70%]
-                ${msg.mine ? "bg-blue-600" : "bg-gray-800"}`}
-              >
-                {msg.text}
-              </div>
+        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+          {messages.length === 0 && (
+            <div className="text-center text-gray-500 text-sm mt-10">
+              No messages yet. Start the conversation 🚀
             </div>
-          ))}
+          )}
+
+          {messages.map((msg, index) => {
+            const isMine = msg.mine;
+
+            return (
+              <div
+                key={index}
+                className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+              >
+                <div className="max-w-[75%]">
+                  {/* Sender Name */}
+                  {!isMine && (
+                    <div className="text-xs text-gray-500 mb-1 ml-1">
+                      {msg.sender.email}
+                    </div>
+                  )}
+
+                  {/* Bubble */}
+                  <div
+                    className={`px-4 py-2 rounded-2xl text-sm leading-relaxed
+              ${
+                isMine
+                  ? "bg-linear-to-r from-blue-600 to-blue-500 text-white rounded-br-sm shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                  : "bg-gray-800 text-gray-200 rounded-bl-sm border border-white/10"
+              }`}
+                  >
+                    {msg.text}
+                  </div>
+
+                  {/* Timestamp (optional static for now) */}
+                  <div className="text-[10px] text-gray-500 mt-1 px-1">
+                    {new Date().toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        {/* Message Input */}
+        {/* Input Area */}
         <form
-        onSubmit={sendMessagetoServer}
-          className="p-3 border-t border-white/10 flex gap-2"
+          onSubmit={sendMessagetoServer}
+          className="p-3 border-t border-white/10 bg-black/80"
         >
-          <input
-            type="text"
-            placeholder="Type message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 px-3 py-2 rounded bg-gray-900 border border-white/10 text-sm focus:outline-none"
-          />
+          <div className="flex items-center gap-2 bg-gray-900 border border-white/10 rounded-xl px-2 py-2">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="flex-1 bg-transparent px-2 text-sm focus:outline-none placeholder-gray-500"
+            />
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded"
-          >
-            Send
-          </button>
+            <button
+              type="submit"
+              disabled={!message.trim()}
+              className={`px-4 py-1.5 rounded-lg text-sm transition
+          ${
+            message.trim()
+              ? "bg-blue-600 hover:bg-blue-500"
+              : "bg-gray-700 cursor-not-allowed"
+          }`}
+            >
+              Send
+            </button>
+          </div>
         </form>
       </div>
 
@@ -270,7 +347,9 @@ const Project = () => {
                   Add ({addUsers.size})
                 </button>
               ) : (
-                <div className="text-xs text-red-300">Only project owner can add collaborators.</div>
+                <div className="text-xs text-red-300">
+                  Only project owner can add collaborators.
+                </div>
               )}
             </div>
 
