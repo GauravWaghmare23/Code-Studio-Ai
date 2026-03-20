@@ -11,6 +11,7 @@ import {
 import { useContext } from "react";
 import { UserContext } from "./../context/UserContext";
 import { useRef } from "react";
+import Markdown from "markdown-to-jsx";
 
 const Project = () => {
   const location = useLocation();
@@ -26,8 +27,11 @@ const Project = () => {
   const [search, setSearch] = useState("");
   const [addUsers, setAddUsers] = useState(new Set());
   const [users, setUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState(0);
   const { user } = useContext(UserContext);
-    const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const [sidePanelWidth, setSidePanelWidth] = useState(350); // Initial width in pixels
+  const [isResizing, setIsResizing] = useState(false);
   const isProjectOwner = projectData?.owner?._id === user?.id;
 
   function usersHandler() {
@@ -127,27 +131,65 @@ const Project = () => {
       initializeSocket(projectData._id);
 
       const listener = (data) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        text: data.message,
-        sender: data.sender,
-        mine: data.sender.id === user.id,
-      },
-    ]);
-  };
+        setMessages((prev) => [
+          ...prev,
+          {
+            text: data.message,
+            sender: data.sender,
+            mine: data.sender.id === user.id,
+            isAi: data.sender.id === "ai",
+          },
+        ]);
+      };
 
-  recieveMessage("project-message", listener);
+      const countListener = (data) => {
+        setOnlineUsers(data);
+      }
 
-  return () => {
-    removeListener("project-message", listener);
-  };
+      recieveMessage("project-message", listener);
+      recieveMessage("user-count", countListener);
+
+      return () => {
+        removeListener("project-message", listener);
+        removeListener("user-count", countListener);
+      };
     }
   }, [projectData._id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleMouseDown = (e) => {
+    setIsResizing(true);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isResizing) return;
+    const newWidth = e.clientX;
+    // Set constraints for min and max width
+    if (newWidth > 250 && newWidth < 800) {
+      setSidePanelWidth(newWidth);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsResizing(false);
+  };
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    } else {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
 
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">
@@ -158,7 +200,7 @@ const Project = () => {
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <h2 className="font-semibold">Collaborators</h2>
+          <h2 className="font-semibold">Collaborators <span className="text-xs text-gray-400">({onlineUsers} online)</span></h2>
 
           <div className="flex items-center gap-3">
             {/* Add Collaborator */}
@@ -209,13 +251,23 @@ const Project = () => {
       </div>
 
       {/* CHAT PANEL */}
-      <div className="w-[25%] border-r border-white/10 flex flex-col bg-black/60 backdrop-blur-md">
+      <div 
+        style={{ width: `${sidePanelWidth}px` }}
+        className="shrink-0 border-r border-white/10 flex flex-col bg-black/60 backdrop-blur-md relative"
+      >
+        {/* Resize Handle */}
+        <div
+          onMouseDown={handleMouseDown}
+          className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500/50 transition-colors z-30 group"
+        >
+          <div className={`absolute top-0 right-0 w-[2px] h-full ${isResizing ? 'bg-blue-500' : 'bg-transparent group-hover:bg-blue-500/30'} transition-colors`} />
+        </div>
         {/* Chat Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/80">
           <div>
             <h2 className="font-semibold text-sm">{project.name}</h2>
             <p className="text-xs text-gray-500">
-              {projectData.users?.length} members
+              {projectData.users?.length} members • {onlineUsers} online
             </p>
           </div>
 
@@ -237,6 +289,7 @@ const Project = () => {
 
           {messages.map((msg, index) => {
             const isMine = msg.mine;
+            const isAi = msg.isAi;
 
             return (
               <div
@@ -254,13 +307,17 @@ const Project = () => {
                   {/* Bubble */}
                   <div
                     className={`px-4 py-2 rounded-2xl text-sm leading-relaxed
-              ${
-                isMine
-                  ? "bg-linear-to-r from-blue-600 to-blue-500 text-white rounded-br-sm shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                  : "bg-gray-800 text-gray-200 rounded-bl-sm border border-white/10"
-              }`}
+              ${isMine
+                        ? "bg-linear-to-r from-blue-600 to-blue-500 text-white rounded-br-sm shadow-[0_0_10px_rgba(59,130,246,0.3)] overflow-auto"
+                        : `bg-gray-800 text-gray-200 rounded-bl-sm border border-white/10 overflow-auto ${isAi ? 'scrollbar-hide' : ''}`
+                      }`}
                   >
-                    {msg.text}
+                    {isAi ? (
+                      <Markdown>{msg.text}</Markdown>
+                    ) : (
+                      msg.text
+                    )}
+
                   </div>
 
                   {/* Timestamp (optional static for now) */}
@@ -295,11 +352,10 @@ const Project = () => {
               type="submit"
               disabled={!message.trim()}
               className={`px-4 py-1.5 rounded-lg text-sm transition
-          ${
-            message.trim()
-              ? "bg-blue-600 hover:bg-blue-500"
-              : "bg-gray-700 cursor-not-allowed"
-          }`}
+          ${message.trim()
+                  ? "bg-blue-600 hover:bg-blue-500"
+                  : "bg-gray-700 cursor-not-allowed"
+                }`}
             >
               Send
             </button>
@@ -347,11 +403,10 @@ const Project = () => {
                 <button
                   onClick={() => addCollaboratorHandler()}
                   disabled={addUsers.size === 0}
-                  className={`px-4 py-2 text-sm rounded ${
-                    addUsers.size === 0
-                      ? "bg-gray-700 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-500"
-                  }`}
+                  className={`px-4 py-2 text-sm rounded ${addUsers.size === 0
+                    ? "bg-gray-700 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-500"
+                    }`}
                 >
                   Add ({addUsers.size})
                 </button>
@@ -374,11 +429,10 @@ const Project = () => {
 
                     <button
                       onClick={() => selectUsersHandler(user._id)}
-                      className={`px-3 py-1 text-sm rounded transition ${
-                        addUsers.has(user._id)
-                          ? "bg-green-600 hover:bg-green-500"
-                          : "bg-gray-700 hover:bg-gray-600"
-                      }`}
+                      className={`px-3 py-1 text-sm rounded transition ${addUsers.has(user._id)
+                        ? "bg-green-600 hover:bg-green-500"
+                        : "bg-gray-700 hover:bg-gray-600"
+                        }`}
                     >
                       {addUsers.has(user._id) ? "Selected" : "Select"}
                     </button>

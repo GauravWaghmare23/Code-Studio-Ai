@@ -7,6 +7,7 @@ import cors from "cors";
 import { globalLimiter } from "./config/rateLimiter.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 import helmet from "helmet";
+import aiRoutes from "./routes/ai.route.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(globalLimiter);
 
 app.use("/users",userRoutes);
 app.use("/projects",projectRoutes);
+app.use("/ai",aiRoutes);
 app.use("/",(req,res)=>{
     res.send("hello world");
 })

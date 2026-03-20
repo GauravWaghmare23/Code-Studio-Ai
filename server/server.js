@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import ProjectModel from "./models/project.model.js";
+import { generateResult } from "./services/ai.service.js";
 
 connect();
 
@@ -56,13 +57,22 @@ io.use(async (socket, next) => {
   }
 });
 
+
 io.on("connection", (socket) => {
+
 
   console.log("a user connected : " + socket.id);
 
   socket.join(socket.project._id.toString());
 
-  socket.on("project-message", (data) => {
+  const userCount = async () => {
+    const clients = await io.in(socket.project._id.toString()).fetchSockets();
+    io.to(socket.project._id.toString()).emit("user-count", clients.length);
+  }
+
+  userCount();
+
+  socket.on("project-message",async (data) => {
 
     const messagePayload = {
       message: data.message,
@@ -74,6 +84,21 @@ io.on("connection", (socket) => {
 
     console.log("Received message:", messagePayload);
 
+    const aiIsPresentInMessage = messagePayload.message.includes("@ai");
+
+    if (aiIsPresentInMessage) {
+      const prompt = messagePayload.message.replace("@ai", "").trim();
+      const result = await generateResult(prompt);
+      socket.emit('project-message', {
+        message: result,
+        sender: {
+          id: "ai",
+          email: "ai@ai.com",
+        },
+      })
+      return
+    }
+
     socket.broadcast
       .to(socket.project._id.toString())
       .emit("project-message", messagePayload);
@@ -81,8 +106,13 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected : " + socket.id);
+    socket.leave(socket.project._id.toString());
+    setTimeout(() => {
+      userCount();
+    }, 100);
   });
 });
+
 
 const port = process.env.PORT || 4000;
 
