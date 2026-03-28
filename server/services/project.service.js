@@ -194,9 +194,28 @@ export const getProjectByIdService = async ({ projectId, userId }) => {
     .populate("users", "email")
     .populate("owner", "email");
 
-  if (!project) {
-    throw new Error("Project not found or user is not a member");
+  return project;
+};
+
+export const updateFileTree = async ({ projectId, fileTree }) => {
+  if (!projectId) {
+    throw new Error("Project ID is required");
   }
+
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    throw new Error("Invalid Project ID");
+  }
+
+  if (!fileTree) {
+    throw new Error("File tree is required");
+  }
+
+  const project = await ProjectModel.findByIdAndUpdate(
+    projectId,
+    { fileTree },
+    { new: true }
+  );
 
   return project;
 };
+

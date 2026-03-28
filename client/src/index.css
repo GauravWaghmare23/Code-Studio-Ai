@@ -1,5 +1,52 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Inter", "Roboto", "sans-serif";
+}
+
+@layer base {
+  body {
+    @apply bg-[#050505] text-white antialiased;
+    scroll-behavior: smooth;
+  }
+
+  /* CUSTOM SCROLLBAR - MINIMALIST PREMIUM */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer components {
+  .outline-text {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+    color: transparent;
+    transition: all 0.5s ease;
+  }
+  .outline-text:hover {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

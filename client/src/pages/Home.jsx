@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../config/axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Home = () => {
   const { user, setUser } = useContext(UserContext);
@@ -31,7 +32,6 @@ const Home = () => {
 
   function createProjectHandler(e) {
     e.preventDefault();
-
     setLoading(true);
     setError("");
 
@@ -43,8 +43,7 @@ const Home = () => {
         fetchProjects();
       })
       .catch((error) => {
-        const message =
-          error?.response?.data?.error || "Failed to create project";
+        const message = error?.response?.data?.error || "Failed to create project";
         setError(message);
       })
       .finally(() => {
@@ -70,194 +69,200 @@ const Home = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden px-4 sm:px-6 py-6">
-
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.95),#000_75%)]" />
-
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.25) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.25) 1.5px, transparent 1.5px)",
-            backgroundSize: "40px 40px",
-          }}
+    <div className="relative min-h-screen bg-[#050505] text-white overflow-hidden font-sans selection:bg-blue-500/30">
+      
+      {/* ATMOSPHERIC BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
+        <div 
+           className="absolute inset-0 opacity-[0.15]" 
+           style={{ backgroundImage: "radial-gradient(#ffffff 0.5px, transparent 0.5px)", backgroundSize: "30px 30px" }} 
         />
       </div>
 
-      {/* HEADER */}
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
+        
+        {/* HEADER */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3"
+          >
+             <div className="w-10 h-10 bg-linear-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white"><path d="M12 2L2 12L12 22L22 12L12 2z" /></svg>
+             </div>
+             <div>
+                <h1 className="text-2xl font-black tracking-tighter">CodeStudio <span className="text-blue-500">AI</span></h1>
+                <p className="text-xs text-neutral-500 font-mono uppercase tracking-widest">{user?.email}</p>
+             </div>
+          </motion.div>
 
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-200 to-white bg-clip-text text-transparent">
-            Code Studio AI
-          </h1>
-
-          <p className="text-gray-400 text-sm mt-1">
-            Welcome, {user?.email} 
-          </p>
-        </div>
-
-        <button
-          onClick={logoutHandler}
-          className="px-5 py-2 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_12px_rgba(255,255,255,0.1)]"
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* CREATE PROJECT BUTTON */}
-      <div className="relative z-10 mb-8">
-        <button
-          onClick={() => {
-            setError("");
-            setModalOpen(true);
-          }}
-          className="px-6 py-3 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-        >
-          Create Project
-        </button>
-      </div>
-
-      {/* PROJECT GRID */}
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {projects.length === 0 ? (
-          <div className="p-6 rounded-xl bg-black/70 border border-white/10">
-            <h2 className="text-lg font-semibold mb-2">No Projects</h2>
-            <p className="text-gray-400 text-sm">
-              No projects found. Create your first project.
-            </p>
-          </div>
-        ) : (
-          projects.map((project) => (
-            <div
-              key={project._id}
-              onClick={() =>
-                navigate("/project", {
-                  state: { project },
-                })
-              }
-              className="relative p-6 rounded-xl bg-black/70 border border-white/10 hover:border-white/20 transition cursor-pointer"
+          <motion.div 
+             initial={{ opacity: 0, x: 20 }}
+             animate={{ opacity: 1, x: 0 }}
+             className="flex gap-4"
+          >
+            <button
+              onClick={() => { setError(""); setModalOpen(true); }}
+              className="px-6 py-2.5 bg-white text-black text-sm font-bold rounded-full hover:bg-neutral-200 transition-all active:scale-95 shadow-xl shadow-white/5"
             >
+              + Create Project
+            </button>
+            <button
+              onClick={logoutHandler}
+              className="px-6 py-2.5 bg-neutral-900 border border-white/5 text-sm font-bold rounded-full hover:bg-neutral-800 transition-all active:scale-95"
+            >
+              Logout
+            </button>
+          </motion.div>
+        </header>
 
-              {/* DELETE BUTTON */}
-              {project.owner?._id === user?.id && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteProjectHandler(project._id);
-                  }}
-                  className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition"
+        {/* PROJECTS GRID */}
+        <main>
+          <motion.h3 
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             transition={{ delay: 0.2 }}
+             className="text-neutral-500 text-[10px] font-black uppercase tracking-widest mb-8 flex items-center gap-4"
+          >
+            Active Projects <div className="h-px flex-1 bg-white/5" />
+          </motion.h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence mode="popLayout">
+              {projects.length === 0 ? (
+                <motion.div 
+                   initial={{ opacity: 0, y: 20 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   className="col-span-full py-32 text-center rounded-3xl bg-neutral-900/20 border border-dashed border-white/10"
                 >
-                  <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 7h12M9 7v12m6-12v12M5 7l1 14a2 2 0 002 2h8a2 2 0 002-2l1-14M9 7V4h6v3"
-                  />
-                </svg>
-              </button>
-              )}
-
-              <h2 className="text-lg font-semibold mb-2">
-                {project.name}
-              </h2>
-
-              <p className="text-gray-400 text-xs mb-1">
-                Owner: {project.owner?.email || "Unknown"}
-              </p>
-
-              <p className="text-gray-400 text-sm">
-                Members: {project.users?.length}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mt-3">
-                <span className="text-gray-400 text-sm">
-                  Collaborators:
-                </span>
-
-                {project.users?.map((member) => (
-                  <span
-                    key={member._id}
-                    className="px-2 py-1 text-xs rounded-md bg-gray-800 border border-white/10 text-gray-300"
+                  <p className="text-neutral-500">Your workspace is empty. Start your first mission.</p>
+                </motion.div>
+              ) : (
+                projects.map((project, i) => (
+                  <motion.div
+                    key={project._id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4, delay: i * 0.05 }}
+                    onClick={() => navigate("/project", { state: { project } })}
+                    className="group relative p-8 rounded-3xl bg-neutral-900/30 border border-white/5 hover:border-white/20 transition-all cursor-pointer backdrop-blur-sm overflow-hidden"
                   >
-                    {member.email}
-                  </span>
-                ))}
-              </div>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-linear-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-2xl" />
+                    
+                    <div className="flex justify-between items-start mb-6">
+                       <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-blue-600/10 transition-colors">
+                           <svg viewBox="0 0 24 24" className="w-6 h-6 fill-neutral-500 group-hover:fill-blue-500 transition-colors">
+                               <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2zm0 4h5v2H8v-2z" />
+                           </svg>
+                       </div>
+                       {project.owner?._id === user?.id && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteProjectHandler(project._id); }}
+                          className="p-2 rounded-full hover:bg-red-500/20 text-neutral-600 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+                        >
+                           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" /></svg>
+                        </button>
+                      )}
+                    </div>
 
-            </div>
-          ))
-        )}
-
+                    <h2 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors lowercase tracking-tight">
+                      {project.name}
+                    </h2>
+                    
+                    <div className="space-y-4">
+                      <div className="flex -space-x-2">
+                        {project.users?.map((member, j) => (
+                           <div key={j} className="w-6 h-6 rounded-full bg-neutral-800 border-2 border-black flex items-center justify-center text-[8px] font-bold text-neutral-400 overflow-hidden" title={member.email}>
+                              {member.email[0].toUpperCase()}
+                           </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-600 uppercase tracking-widest">
+                         <span>{project.users?.length} collaborators</span>
+                         <div className="w-1 h-1 rounded-full bg-neutral-800" />
+                         <span>IDE Active</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
 
       {/* MODAL */}
-      {modalOpen && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50 px-4">
+      <AnimatePresence>
+        {modalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-100 px-4">
+            <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               onClick={() => setModalOpen(false)}
+               className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+            />
+            
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="relative w-full max-w-md bg-[#0d0d0d] border border-white/10 rounded-4xl p-10 shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full" />
+              
+              <h2 className="text-2xl font-black mb-2 text-center tracking-tight">MISSION INITIALIZATION</h2>
+              <p className="text-xs text-neutral-500 text-center mb-8 font-mono uppercase tracking-widest">Define your project parameters</p>
 
-          <div className="relative w-full max-w-md bg-black/80 border border-white/10 rounded-xl p-6 sm:p-8 shadow-[0_0_50px_rgba(0,0,0,1)]">
+              {error && (
+                <div className="mb-6 py-2 px-4 rounded-lg bg-red-500/10 border border-red-500/20 text-[10px] text-red-500 font-mono text-center uppercase tracking-widest">
+                  {error}
+                </div>
+              )}
 
-            <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-center">
-              Create New Project
-            </h2>
+              <form onSubmit={createProjectHandler} className="space-y-6">
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-neutral-500 uppercase tracking-widest ml-1">Archive Name</label>
+                   <input
+                    type="text"
+                    placeholder="E.G. PROJECT-CYBERPUNK"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    required
+                    className="w-full px-5 py-3 rounded-2xl bg-black border border-white/5 text-white placeholder-neutral-700 focus:outline-none focus:border-blue-500/50 transition-all font-mono text-sm"
+                  />
+                </div>
 
-            {error && (
-              <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm text-red-400">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={createProjectHandler} className="space-y-5">
-
-              <input
-                type="text"
-                placeholder="Project Name"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 rounded-lg bg-black border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
-              />
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${
+                    loading
+                      ? "bg-neutral-800 text-neutral-600 cursor-not-allowed"
+                      : "bg-white text-black hover:bg-neutral-200 active:scale-95 shadow-xl shadow-white/5"
+                  }`}
+                >
+                  {loading ? "PROCESSING..." : "CONFIRM CREATION"}
+                </button>
+              </form>
 
               <button
-                disabled={loading}
-                type="submit"
-                className={`w-full py-2.5 rounded-lg font-semibold transition ${
-                  loading
-                    ? "bg-gray-700 cursor-not-allowed"
-                    : "bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
-                }`}
+                onClick={() => setModalOpen(false)}
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/5 text-neutral-600 hover:text-white transition-colors"
               >
-                {loading ? "Creating..." : "Create Project"}
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" /></svg>
               </button>
-
-            </form>
-
-            <button
-              onClick={() => {
-                setModalOpen(false);
-                setError("");
-              }}
-              className="absolute top-3 right-4 text-gray-400 hover:text-white"
-            >
-              ✕
-            </button>
-
+            </motion.div>
           </div>
-
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };
 
-export default Home;
+export default Home;

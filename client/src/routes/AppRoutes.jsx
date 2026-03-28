@@ -6,11 +6,15 @@ import ProtectedRoute from "../context/ProtectedRoute";
 import Home from "../pages/Home";
 import Project from "../pages/Project";
 
+import Landing from "../pages/Landing";
+import Docs from "../pages/Docs";
+
 const AppRoutes = () => {
   return (
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Home />
@@ -24,8 +28,10 @@ const AppRoutes = () => {
         } />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/docs" element={<Docs />} />
       </Routes>
   );
 };
+
 
 export default AppRoutes;

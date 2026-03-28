@@ -72,7 +72,7 @@ io.on("connection", (socket) => {
 
   userCount();
 
-  socket.on("project-message",async (data) => {
+  socket.on("project-message", async (data) => {
 
     const messagePayload = {
       message: data.message,
@@ -80,6 +80,7 @@ io.on("connection", (socket) => {
         id: socket.user.id,
         email: socket.user.email,
       },
+      fileTree: data.fileTree || socket.project.fileTree,
     };
 
     console.log("Received message:", messagePayload);
@@ -88,21 +89,42 @@ io.on("connection", (socket) => {
 
     if (aiIsPresentInMessage) {
       const prompt = messagePayload.message.replace("@ai", "").trim();
-      const result = await generateResult(prompt);
-      socket.emit('project-message', {
+      const currentFileTree = data.fileTree || socket.project.fileTree || {};
+      
+      const result = await generateResult(prompt, currentFileTree);
+
+      socket.emit("project-message", {
         message: result,
         sender: {
           id: "ai",
           email: "ai@ai.com",
         },
-      })
-      return
+      });
+      return;
     }
 
     socket.broadcast
       .to(socket.project._id.toString())
       .emit("project-message", messagePayload);
+
   });
+
+  socket.on("update-filetree", async (data) => {
+    try {
+      const { fileTree } = data;
+      const projectId = socket.project._id;
+
+      await ProjectModel.findByIdAndUpdate(projectId, { fileTree });
+      socket.project.fileTree = fileTree; // Sync in-memory
+
+      socket.broadcast
+        .to(projectId.toString())
+        .emit("update-filetree", { fileTree });
+    } catch (error) {
+      console.error("Failed to update fileTree via socket:", error);
+    }
+  });
+
 
   socket.on("disconnect", () => {
     console.log("user disconnected : " + socket.id);

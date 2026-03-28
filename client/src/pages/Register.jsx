@@ -1,162 +1,149 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import axiosInstance from "../config/axios";
 import { UserContext } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { setUser } = useContext(UserContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
 
-  function submitHandler(e) {
-    e.preventDefault();
-    setError("");
+    const submitHandler = async (e) => {
+        e.preventDefault();
+        setError("");
+        if (!email || !password) return setError("Please fill all the fields");
+        
+        setLoading(true);
+        try {
+            const res = await axiosInstance.post("/users/register", { email, password });
+            localStorage.setItem("token", res.data.token);
+            setUser(res.data.data);
+            navigate("/dashboard");
+        } catch (err) {
+            setError(err?.response?.data?.error || "Registration failed");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    if (!email || !password) {
-      setError("Please fill all the fields");
-      return;
-    }
+    return (
+        <div className="relative min-h-screen flex items-center justify-center bg-[#050505] overflow-hidden px-4 font-sans">
+            {/* ATMOSPHERIC BACKGROUND */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.3, 1],
+                        opacity: [0.1, 0.15, 0.1] 
+                    }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-600 blur-[150px] rounded-full" 
+                />
+                <motion.div 
+                    animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.05, 0.1, 0.05] 
+                    }}
+                    transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-600 blur-[150px] rounded-full" 
+                />
+            </div>
 
-    setLoading(true);
-
-    axiosInstance
-      .post("/users/register", { email, password })
-      .then((res) => {
-        localStorage.setItem("token", res.data.token);
-        setUser(res.data.data);
-        navigate("/");
-      })
-      .catch((err) => {
-        const message = err?.response?.data?.error || "Registration failed";
-        setError(message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
-  return (
-    <div className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-4">
-      {/* Ultra Dark Grid Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(8,8,8,0.95),#000_75%)]" />
-
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.25) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.25) 1.5px, transparent 1.5px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
-
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(120,120,120,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(120,120,120,0.12) 1px, transparent 1px)",
-            backgroundSize: "90px 90px",
-          }}
-        />
-
-        <div className="absolute -top-40 -left-40 w-125 h-125 bg-indigo-900/20 blur-[200px] rounded-full" />
-        <div className="absolute bottom-0 right-0 w-112.5 h-112.5 bg-purple-900/20 blur-[180px] rounded-full" />
-      </div>
-
-      {/* Register Card */}
-      <div className="relative w-full max-w-md bg-black/80 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_0_60px_rgba(0,0,0,1)] p-8">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 rounded-2xl">
-            <div className="animate-spin h-7 w-7 border-2 border-white border-t-transparent rounded-full"></div>
-          </div>
-        )}
-
-        {/* Branding */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-wide bg-linear-to-r from-gray-200 to-white bg-clip-text text-transparent">
-            Code Studio AI
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm">
-            Create your developer account
-          </p>
-        </div>
-
-        {/* Heading */}
-        <div className="mb-6 text-center">
-          <h2 className="text-xl font-semibold text-white">Get started</h2>
-          <p className="text-gray-500 text-sm mt-1">Join and start building</p>
-        </div>
-
-        {/* Error UI */}
-        {error && (
-          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm text-red-400">
-            {error}
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={submitHandler} className="space-y-5">
-          <div>
-            <label className="block text-sm text-gray-400 mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="Enter your email"
-              className="w-full px-4 py-2.5 rounded-lg bg-black border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 focus:shadow-[0_0_12px_rgba(200,200,200,0.4)] transition"
-            />
-          </div>
-
-          <div>
-            <label
-              className="block text-sm text-gray-400 mb-1"
-              htmlFor="password"
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative z-10 w-full max-w-[440px]"
             >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Create a password"
-              className="w-full px-4 py-2.5 rounded-lg bg-black border border-white/10 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 focus:shadow-[0_0_12px_rgba(200,200,200,0.4)] transition"
-            />
-          </div>
+                {/* LOGO AREA */}
+                <div className="text-center mb-10">
+                    <motion.div 
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        className="inline-block p-4 rounded-3xl bg-white/5 border border-white/10 mb-6 backdrop-blur-xl shadow-2xl"
+                    >
+                        <svg viewBox="0 0 24 24" className="w-10 h-10 fill-white"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4.5l5.5 5.5-5.5 5.5L6.5 12 12 6.5z" /></svg>
+                    </motion.div>
+                    <h1 className="text-3xl font-black tracking-tighter uppercase text-white mb-2">Create Account</h1>
+                    <p className="text-neutral-500 text-sm font-medium">Join the next generation of <span className="text-blue-500">AI Coding</span></p>
+                </div>
 
-          <button
-            type="submit"
-            className="w-full py-2.5 rounded-lg bg-linear-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 text-white font-semibold transition duration-200 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
-          >
-            Register
-          </button>
-        </form>
+                {/* FORM CARD */}
+                <div className="bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 md:p-10 shadow-2xl overflow-hidden relative">
+                    <AnimatePresence>
+                        {loading && (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center"
+                            >
+                                <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-        {/* Footer */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="text-gray-300 hover:text-white font-medium"
-            >
-              Login
-            </a>
-          </p>
+                    {error && (
+                        <motion.div 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-widest text-center"
+                        >
+                            {error}
+                        </motion.div>
+                    )}
+
+                    <form onSubmit={submitHandler} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] ml-2">Email Address</label>
+                            <input 
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="john@example.com"
+                                className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder-neutral-700 font-medium"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] ml-2">Create Password</label>
+                            <input 
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="w-full bg-white/5 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder-neutral-700 font-medium"
+                            />
+                        </div>
+
+                        <button 
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-white text-black py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-500 hover:text-white transition-all shadow-xl active:scale-[0.98] disabled:opacity-50"
+                        >
+                            {loading ? "Creating..." : "Register"}
+                        </button>
+                    </form>
+
+                    <div className="mt-10 text-center">
+                        <p className="text-neutral-500 text-xs font-medium">
+                            Already a member? <Link to="/login" className="text-white hover:text-blue-500 transition-colors font-bold ml-1">Sign In</Link>
+                        </p>
+                    </div>
+                </div>
+
+                {/* DECORATIVE ELEMENTS */}
+                <div className="mt-8 flex justify-center gap-6 opacity-20">
+                   <div className="w-8 h-1 bg-white rounded-full" />
+                   <div className="w-8 h-1 bg-white rounded-full" />
+                   <div className="w-8 h-1 bg-white rounded-full" />
+                </div>
+            </motion.div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Register;
+
