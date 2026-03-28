@@ -7,26 +7,27 @@ const Docs = () => {
 
     const chapters = [
         {
-            title: "Getting Started",
+            title: "Renaissance",
             items: [
-                { name: "Introduction", id: "intro" },
-                { name: "Quick Start Guide", id: "quickstart" },
-                { name: "System Requirements", id: "requirements" }
+                { name: "The Faber Vision", id: "intro" },
+                { name: "Forge Engine Architecture", id: "architecture" },
+                { name: "System Pre-requisites", id: "requirements" }
             ]
         },
         {
-            title: "Core Concepts",
+            title: "Core Mechanics",
             items: [
-                { name: "Real-time Sync", id: "sync" },
-                { name: "AI Commands", id: "ai" },
-                { name: "File Management", id: "files" }
+                { name: "Neural Sync Protocol", id: "sync" },
+                { name: "AI Command Matrix", id: "commands" },
+                { name: "Filesystem Governance", id: "files" }
             ]
         },
         {
-            title: "Deployment",
+            title: "Security & Operations",
             items: [
-                { name: "Vercel Support", id: "vercel" },
-                { name: "Netlify Guide", id: "netlify" }
+                { name: "Auth & Identity", id: "auth" },
+                { name: "Advanced Configuration", id: "env" },
+                { name: "Disaster Recovery", id: "recovery" }
             ]
         }
     ];
@@ -35,7 +36,7 @@ const Docs = () => {
         const observerOptions = {
             root: null,
             rootMargin: '0px',
-            threshold: 0.5,
+            threshold: 0.3,
         };
 
         const observerCallback = (entries) => {
@@ -63,18 +64,18 @@ const Docs = () => {
     return (
         <div className="min-h-screen bg-[#050505] text-white font-sans flex selection:bg-blue-500/30">
             {/* SIDEBAR */}
-            <aside className="w-72 border-r border-white/5 p-10 fixed h-full overflow-y-auto hidden md:block bg-[#050505] z-20 scrollbar-hide">
+            <aside className="w-72 border-r border-white/5 p-10 fixed h-full overflow-y-auto hidden lg:block bg-[#050505] z-20 scrollbar-hide">
                 <Link to="/" className="flex items-center gap-3 mb-16 group">
                     <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors shadow-2xl">
                         <svg viewBox="0 0 24 24" className="w-5 h-5 fill-black group-hover:fill-white transition-colors"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4.5l5.5 5.5-5.5 5.5L6.5 12 12 6.5z" /></svg>
                     </div>
-                    <span className="text-sm font-black uppercase tracking-tighter">Documentation</span>
+                    <span className="text-sm font-black uppercase tracking-tighter">Faber Docs</span>
                 </Link>
 
                 <nav className="space-y-12">
                     {chapters.map((chapter, i) => (
                         <div key={i}>
-                            <h4 className="text-[10px] uppercase tracking-[0.25em] text-neutral-600 font-black mb-6">{chapter.title}</h4>
+                            <h4 className="text-[10px] uppercase tracking-[0.3em] text-neutral-600 font-black mb-6">{chapter.title}</h4>
                             <ul className="space-y-4">
                                 {chapter.items.map((item, j) => (
                                     <li key={j}>
@@ -94,146 +95,205 @@ const Docs = () => {
             </aside>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 md:ml-72 p-10 md:p-24 max-w-5xl relative">
-                {/* DECORATIVE BACKGROUND */}
+            <main className="flex-1 lg:ml-72 p-10 lg:p-24 max-w-6xl relative">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 blur-[180px] pointer-events-none" />
 
                 <article className="relative z-10">
-                    <section id="intro" className="mb-32">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                        >
-                            <div className="inline-block px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-500 text-[9px] font-black uppercase tracking-[0.2em] mb-6">
-                                Version 1.0.4 Beta
+                    {/* SECTION: INTRODUCTION */}
+                    <section id="intro" className="mb-40">
+                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                            <div className="inline-block px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-500 text-[9px] font-black uppercase tracking-[0.2em] mb-8">
+                                Codex Protocol v4.2 // Stable
                             </div>
-                            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-[0.85] text-transparent bg-clip-text bg-linear-to-b from-white to-neutral-500">
-                                Introduction
+                            <h1 className="text-7xl lg:text-9xl font-black mb-10 tracking-tighter uppercase leading-[0.8] text-transparent bg-clip-text bg-linear-to-b from-white to-neutral-700">
+                                The <br /> Artisan <br /> Vision
                             </h1>
-                            <p className="text-xl md:text-2xl text-neutral-400 mb-12 leading-relaxed font-medium max-w-3xl">
-                                Code Studio AI is an autonomous development workspace designed for high-performance teams. Build production-ready applications with zero local configuration.
+                            <p className="text-xl lg:text-3xl text-neutral-400 mb-14 leading-relaxed font-medium max-w-4xl">
+                                Faber is more than an IDE. It is an autonomous "Forge" designed for the next era of development, where AI and human engineers collaborate in a high-fidelity, sub-millisecond sync environment.
                             </p>
-                            <div className="flex gap-4">
-                                <button onClick={() => scrollTo('quickstart')} className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-blue-600 hover:text-white transition-all">Get Started</button>
-                                <button className="px-8 py-4 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-white/10 transition-all">View Github</button>
+                            <div className="flex flex-wrap gap-6">
+                                <button onClick={() => scrollTo('architecture')} className="px-10 py-5 bg-white text-black text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-xl active:scale-95">Enter The Forge</button>
+                                <button className="px-10 py-5 bg-white/5 border border-white/10 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-white/10 transition-all active:scale-95">Explore Whitepaper</button>
                             </div>
                         </motion.div>
                     </section>
 
-                    <section id="quickstart" className="py-24 border-t border-white/5">
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-8 italic outline-text">01. Rapid Deployment</h2>
-                        <p className="text-neutral-400 mb-12 text-lg">Initialize your entire development environment in under 60 seconds.</p>
+                    {/* SECTION: ARCHITECTURE */}
+                    <section id="architecture" className="py-32 border-t border-white/5">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter mb-10 italic">01. Forge Engine Architecture</h2>
+                        <p className="text-neutral-400 mb-12 text-lg leading-relaxed max-w-3xl">
+                            The Forge Engine is a multi-threaded indexing system that maintains a persistent vector-graph of your entire repository. This allows our AI to reason over 100k+ lines of code instantly.
+                        </p>
                         
-                        <div className="bg-[#0a0a0a] border border-white/5 rounded-[40px] p-10 font-mono text-sm space-y-10 shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-3xl rounded-full" />
-                            <div className="flex gap-8 items-start relative z-10">
-                                <span className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-[12px] font-black text-blue-500 shrink-0 shadow-lg shadow-blue-500/10">01</span>
-                                <div>
-                                    <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-[11px]">Identity Sync</h4>
-                                    <p className="text-neutral-500 text-[13px] leading-relaxed">Register a new studio instance at <span className="text-blue-500">studio.codex.ai/join</span>. Your neural profile will be generated instantly.</p>
-                                </div>
+                        <div className="grid md:grid-cols-2 gap-10">
+                            <div className="bg-white/2 border border-white/5 p-10 rounded-[40px] hover:bg-white/5 transition-all group">
+                                <div className="text-blue-500 font-mono text-[10px] uppercase tracking-widest mb-6 px-3 py-1 inline-block bg-blue-500/10 rounded-full border border-blue-500/20">Persistence Layer</div>
+                                <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Shadow Filesystem</h3>
+                                <p className="text-neutral-500 text-sm leading-relaxed">A virtualized mirroring system that handles file I/O operations asynchronously, preventing IDE lag during heavy AI code generations.</p>
                             </div>
-                            <div className="flex gap-8 items-start relative z-10">
-                                <span className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-[12px] font-black text-purple-500 shrink-0 shadow-lg shadow-purple-500/10">02</span>
-                                <div>
-                                    <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-[11px]">Stack Initialization</h4>
-                                    <p className="text-neutral-500 text-[13px] leading-relaxed">Execute <span className="text-white bg-white/5 px-2 py-0.5 rounded">/init --template=fullstack</span> in the AI console to scaffold your architecture.</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-8 items-start relative z-10">
-                                <span className="w-10 h-10 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-[12px] font-black text-green-500 shrink-0 shadow-lg shadow-green-500/10">03</span>
-                                <div>
-                                    <h4 className="text-white font-bold mb-2 uppercase tracking-wider text-[11px]">Quantum Sync</h4>
-                                    <p className="text-neutral-500 text-[13px] leading-relaxed">Invite your team. Changes propagate across the neural network with sub-10ms latency.</p>
-                                </div>
+                            <div className="bg-white/2 border border-white/5 p-10 rounded-[40px] hover:bg-white/5 transition-all group">
+                                <div className="text-purple-500 font-mono text-[10px] uppercase tracking-widest mb-6 px-3 py-1 inline-block bg-purple-500/10 rounded-full border border-purple-500/20">Inference Layer</div>
+                                <h3 className="text-xl font-black uppercase tracking-tighter mb-4">Neural Graph</h3>
+                                <p className="text-neutral-500 text-sm leading-relaxed">Proprietary logic mapping that identifies project-wide dependencies, enabling "Impact Analysis" before major refactors.</p>
                             </div>
                         </div>
                     </section>
 
-                    <section id="requirements" className="py-24 border-t border-white/5">
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-8 italic outline-text">02. System Specs</h2>
-                        <div className="grid md:grid-cols-2 gap-8 text-[13px] font-medium">
-                            <div className="p-8 rounded-3xl bg-white/2 border border-white/5 hover:border-blue-500/30 transition-all">
-                                <h4 className="text-blue-400 font-black uppercase tracking-widest mb-4 text-[10px]">Browser Support</h4>
-                                <ul className="space-y-3 text-neutral-500">
-                                    <li className="flex justify-between border-b border-white/5 pb-2"><span>Chrome</span> <span className="text-white">v90+</span></li>
-                                    <li className="flex justify-between border-b border-white/5 pb-2"><span>Edge</span> <span className="text-white">v90+</span></li>
-                                    <li className="flex justify-between pb-2"><span>Safari</span> <span className="text-white">v15+</span></li>
-                                </ul>
-                            </div>
-                            <div className="p-8 rounded-3xl bg-white/2 border border-white/5 hover:border-blue-500/30 transition-all">
-                                <h4 className="text-purple-400 font-black uppercase tracking-widest mb-4 text-[10px]">Network Latency</h4>
-                                <ul className="space-y-3 text-neutral-500">
-                                    <li className="flex justify-between border-b border-white/5 pb-2"><span>Optimal</span> <span className="text-white text-green-400">&lt; 20ms</span></li>
-                                    <li className="flex justify-between border-b border-white/5 pb-2"><span>Recommended</span> <span className="text-white">&lt; 50ms</span></li>
-                                    <li className="flex justify-between pb-2"><span>Standard</span> <span className="text-white text-yellow-500">&lt; 150ms</span></li>
-                                </ul>
-                            </div>
+                    {/* SECTION: REQUIREMENTS */}
+                    <section id="requirements" className="py-32 border-t border-white/5">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter mb-10 italic">02. Environmental Pre-requisites</h2>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-[11px] font-bold uppercase tracking-widest">
+                                <thead className="text-neutral-600 border-b border-white/5">
+                                    <tr>
+                                        <th className="pb-6">Resource</th>
+                                        <th className="pb-6">Requirement</th>
+                                        <th className="pb-6">Optimal Spec</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-neutral-400">
+                                    <tr className="border-b border-white/2">
+                                        <td className="py-8 text-white">Browser Node</td>
+                                        <td className="py-8">Chromium v110+</td>
+                                        <td className="py-8 text-blue-500">Brave / Arc Optimized</td>
+                                    </tr>
+                                    <tr className="border-b border-white/2">
+                                        <td className="py-8 text-white">WebSocket Latency</td>
+                                        <td className="py-8">&lt; 100ms Burst</td>
+                                        <td className="py-8 text-green-500">&lt; 15ms Constant</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-8 text-white">Local Storage</td>
+                                        <td className="py-8">50MB Min</td>
+                                        <td className="py-8">Persistent Indexing En</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </section>
 
-                    <section id="sync" className="py-24 border-t border-white/5">
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-8 italic outline-text">03. Neural Sync</h2>
-                        <p className="text-neutral-400 mb-10 text-lg leading-relaxed">Our protocol uses CRDTs (Conflict-free Replicated Data Types) combined with a custom WebSocket bridge to ensure zero collision editing.</p>
+                    {/* SECTION: NEURAL SYNC */}
+                    <section id="sync" className="py-32 border-t border-white/5">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter mb-10 italic">03. Neural Sync Protocol</h2>
+                        <p className="text-neutral-400 mb-12 text-lg leading-relaxed">
+                            Faber utilizes **Fabric-JS**, a custom implementation of CRDTs for collaborative editing. Every keystroke is transformed into a delta-token and broadcasted via our low-latency orbital relays.
+                        </p>
                         
-                        <div className="relative group">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                            <div className="relative bg-[#080808] border border-white/5 p-8 rounded-3xl overflow-hidden">
-                                <div className="flex items-center gap-2 mb-6">
+                        <div className="bg-[#080808] border border-white/5 p-8 rounded-[40px] relative overflow-hidden group">
+                             <div className="flex justify-between items-center mb-8 px-4">
+                                <div className="flex gap-2">
                                     <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50" />
                                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
                                     <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50" />
                                 </div>
-                                <pre className="font-mono text-[13px] text-blue-400/80 leading-relaxed overflow-x-auto">
-                                    <code>{`// Initialize sync engine
-const studio = new CodeStudio({
-  token: process.env.STUDIO_KEY,
-  neural: true,
-  sync_mode: 'atomic'
-});
+                                <span className="text-[10px] text-neutral-600 font-mono tracking-widest">FABER-DELTA-ENGINE.TS</span>
+                             </div>
+                             <pre className="font-mono text-[14px] leading-relaxed text-blue-400/90 overflow-x-auto px-4">
+                                <code>{`// Core synchronization logic
+export async function syncState(delta: FaberDelta) {
+  const node = await ForgeStore.get(delta.target);
+  
+  if (!node) return ForgeStore.scaffold(delta);
 
-// listen for global mutations
-studio.on('sync:mutate', (delta) => {
-  console.log('Neural delta received:', delta.id);
-  applySnapshot(delta.payload);
-});`}</code>
-                                </pre>
-                            </div>
+  // Atomic conflict resolution
+  return node.apply(delta, {
+    latency: LatencyOptimizer.measure(),
+    neuralVerify: true
+  });
+}`}</code>
+                             </pre>
+                             <div className="absolute bottom-4 right-8 text-[9px] font-black text-white/10 uppercase tracking-[0.4em]">Proprietary Faber Logic</div>
                         </div>
                     </section>
 
-                    {/* PAGINATION */}
-                    <div className="mt-40 pt-16 border-t border-white/5 flex justify-between items-center bg-linear-to-b from-transparent to-blue-500/5 -mx-10 px-10 rounded-b-[60px]">
-                        <button className="group flex flex-col items-start gap-2">
-                            <span className="text-[9px] font-black text-neutral-600 uppercase tracking-[0.2em]">Previous Session</span>
-                            <span className="text-lg font-black text-neutral-400 group-hover:text-blue-500 transition-colors uppercase italic">— Introduction</span>
-                        </button>
-                        <button className="group text-right flex flex-col items-end gap-2">
-                            <span className="text-[9px] font-black text-neutral-600 uppercase tracking-[0.2em]">Up Next</span>
-                            <span className="text-lg font-black text-neutral-400 group-hover:text-blue-500 transition-colors uppercase italic">Core Concepts —</span>
-                        </button>
-                    </div>
+                    {/* SECTION: COMMANDS */}
+                    <section id="commands" className="py-32 border-t border-white/5">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter mb-12 italic text-blue-500">04. AI Command Matrix</h2>
+                        <div className="space-y-6">
+                            {[
+                                { cmd: "/forge", desc: "Instantiates a new module or component within the project structure.", use: "/forge component Header --glass" },
+                                { cmd: "/refact", desc: "Analyzes current file and restructures logic for maximum performance and readability.", use: "/refact current --dry-run" },
+                                { cmd: "/audit", desc: "Full security and linting sweep of the active project graph.", use: "/audit --severity=high" },
+                                { cmd: "/sync", desc: "Force-syncs the local shadow-DOM with the remote master branch.", use: "/sync --master" }
+                            ].map((c, i) => (
+                                <div key={i} className="flex flex-col md:flex-row gap-8 p-10 rounded-3xl bg-white/2 border border-white/5 items-center hover:bg-white/5 transition-all">
+                                    <div className="px-6 py-2 bg-blue-600/10 border border-blue-500/30 text-blue-500 font-mono text-sm rounded-xl shrink-0">{c.cmd}</div>
+                                    <div className="flex-1">
+                                        <p className="text-neutral-400 text-sm leading-relaxed mb-2 font-medium">{c.desc}</p>
+                                        <div className="text-[10px] font-mono text-neutral-600">USAGE: {c.use}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                    <div className="mt-32 p-12 rounded-[50px] bg-linear-to-br from-blue-600/10 via-[#0a0a0a] to-transparent border border-white/5 flex flex-col md:flex-row gap-12 items-center overflow-hidden relative group">
-                         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 blur-[100px] group-hover:bg-blue-500/20 transition-all duration-1000" />
-                         <div className="w-20 h-20 bg-white rounded-[32px] flex items-center justify-center shadow-2xl shrink-0 group-hover:rotate-12 transition-all duration-500">
-                            <svg viewBox="0 0 24 24" className="w-10 h-10 fill-black"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" /></svg>
+                    {/* SECTION: AUTH & IDENTITY */}
+                    <section id="auth" className="py-32 border-t border-white/5">
+                         <h2 className="text-4xl font-black uppercase tracking-tighter mb-10 italic">05. Auth & Team Governance</h2>
+                         <p className="text-neutral-400 mb-12 text-lg">Faber implements multi-signature authorization for all destructive operations and uses AES-256-GCM encryption at the edge.</p>
+                         
+                         <div className="grid md:grid-cols-3 gap-6">
+                            {[
+                                { title: "JWT Core", status: "Active" },
+                                { title: "RSA Keys", status: "Enforced" },
+                                { title: "2FA Neural", status: "Optional" }
+                            ].map((a, i) => (
+                                <div key={i} className="p-8 rounded-[32px] bg-white/2 border border-white/5 text-center">
+                                    <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest mb-4">{a.title}</div>
+                                    <div className="text-blue-500 font-bold tracking-tighter text-xl">{a.status}</div>
+                                </div>
+                            ))}
                          </div>
-                         <div className="relative z-10 text-center md:text-left">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter mb-3 italic">Strategy & Growth</h4>
-                            <p className="text-neutral-500 font-medium leading-relaxed max-w-lg">Our core architectural board is available for consultation regarding enterprise-grade deployments and security modeling.</p>
-                            <button className="mt-6 text-[10px] font-black text-blue-500 uppercase tracking-[0.25em] border-b border-blue-500/30 hover:border-blue-500 transition-all pb-1">Enter Strategy Chamber</button>
+                    </section>
+
+                    {/* SECTION: ENV CONFIG */}
+                    <section id="env" className="py-32 border-t border-white/5">
+                        <h2 className="text-4xl font-black uppercase tracking-tighter mb-10 italic">06. Advanced Configuration</h2>
+                        <div className="bg-white/3 border border-white/5 rounded-[40px] p-12 overflow-hidden relative">
+                             <div className="grid md:grid-cols-2 gap-12 font-mono text-[11px] uppercase tracking-widest">
+                                <div className="space-y-10">
+                                    <div className="group">
+                                        <div className="text-blue-500 mb-2">FABER_STRENGHT</div>
+                                        <p className="text-neutral-500 text-[9px] lowercase lowercase-normal">Defines the neural inference depth (0.1 - 1.0)</p>
+                                    </div>
+                                    <div className="group">
+                                        <div className="text-blue-500 mb-2">FORGE_SYNC_RETRY</div>
+                                        <p className="text-neutral-500 text-[9px] lowercase">Interval for automatic node re-connection (ms)</p>
+                                    </div>
+                                </div>
+                                <div className="space-y-10">
+                                    <div className="group">
+                                        <div className="text-purple-500 mb-2">AI_HEURISTIC_MODE</div>
+                                        <p className="text-neutral-500 text-[9px] lowercase italic">Creative | Balanced | Deterministic</p>
+                                    </div>
+                                    <div className="group">
+                                        <div className="text-purple-500 mb-2">AUTH_TOKEN_EXP</div>
+                                        <p className="text-neutral-500 text-[9px] lowercase">JWT standard expiry in ISO formatted string</p>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                    </section>
+
+                    {/* FOOTER PAGINATION */}
+                    <div className="mt-40 pt-20 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-12">
+                         <div className="flex flex-col gap-2 cursor-pointer group">
+                            <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">Master Chapter</span>
+                            <span className="text-2xl font-black uppercase tracking-tighter group-hover:text-blue-500 transition-colors italic">00. Introduction</span>
+                         </div>
+                         <div className="flex flex-col gap-2 text-center md:text-right cursor-pointer group">
+                            <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">Next Evolution</span>
+                            <span className="text-2xl font-black uppercase tracking-tighter group-hover:text-blue-500 transition-colors italic">02. Core Mechanics</span>
                          </div>
                     </div>
                 </article>
 
-                <footer className="mt-40 text-[9px] font-black text-neutral-700 uppercase tracking-[0.4em] flex justify-between items-center">
-                    <span>© 2024 Code Studio Labs</span>
-                    <div className="flex gap-8">
-                        <span className="hover:text-white cursor-pointer transition-colors">Privacy</span>
-                        <span className="hover:text-white cursor-pointer transition-colors">Security</span>
-                        <span className="hover:text-white cursor-pointer transition-colors">Nodes</span>
+                <footer className="mt-60 pb-20 text-[10px] font-black text-neutral-800 uppercase tracking-[0.5em] flex flex-col md:flex-row justify-between items-center gap-10">
+                    <p>© 2026 FABER SYSTEMS INC. ALL RIGHTS RESERVED.</p>
+                    <div className="flex gap-10">
+                        <Link to="#" className="hover:text-blue-500 transition-colors">SECURITY</Link>
+                        <Link to="#" className="hover:text-blue-500 transition-colors">OS STATUS</Link>
+                        <Link to="#" className="hover:text-blue-500 transition-colors">GUILD</Link>
                     </div>
                 </footer>
             </main>

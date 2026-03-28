@@ -49,7 +49,7 @@ const Landing = () => {
                     <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
                         <svg viewBox="0 0 24 24" className="w-6 h-6 fill-black"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4.5l5.5 5.5-5.5 5.5L6.5 12 12 6.5z" /></svg>
                     </div>
-                    <span className="text-xl font-black tracking-tighter uppercase whitespace-nowrap">Code Studio <span className="text-blue-500 italic">AI</span></span>
+                    <span className="text-xl font-black tracking-tighter uppercase whitespace-nowrap">Faber <span className="text-blue-500 italic">Studio</span></span>
                 </motion.div>
                 
                 <motion.div 
@@ -97,7 +97,7 @@ const Landing = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         className="inline-block px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-10"
                     >
-                        Autonomous Development Engine
+                        Autonomous Development Forge
                     </motion.div>
                     
                     <h1 className="text-6xl md:text-[100px] font-black tracking-tighter leading-[0.9] text-white uppercase mb-8">
@@ -111,7 +111,7 @@ const Landing = () => {
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
                         <Link to="/register" className="group relative px-10 py-5 bg-white text-black rounded-[24px] font-black uppercase tracking-widest text-xs hover:bg-blue-500 hover:text-white transition-all shadow-2xl active:scale-95">
-                            Start Building Free
+                            Join the Guild Free
                             <div className="absolute inset-0 rounded-[24px] bg-white opacity-20 blur-xl group-hover:opacity-40 transition-opacity" />
                         </Link>
                         <Link to="/docs" className="px-10 py-5 bg-white/5 border border-white/10 rounded-[24px] font-black uppercase tracking-widest text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 transition-all active:scale-95">
@@ -207,7 +207,7 @@ const Landing = () => {
             <section className="reveal-section py-40 px-6 md:px-20">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-20">
-                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">Built for the <br /><span className="text-blue-500">Fastest Engineers</span></h2>
+                        <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">Forge for the <br /><span className="text-blue-500">Fastest Engineers</span></h2>
                         <div className="w-20 h-1 bg-blue-500 rounded-full" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -240,7 +240,7 @@ const Landing = () => {
                             A Masterpiece <br /> of <span className="text-blue-500">Inference</span>
                         </h2>
                         <p className="text-neutral-500 text-lg leading-relaxed mb-10 max-w-xl">
-                            Code Studio AI doesn't just predict text. It maintains a persistent mental model of your entire application architecture in a multi-dimensional vector space.
+                            Faber doesn't just predict text. It maintains a persistent mental model of your entire application architecture in a multi-dimensional vector space.
                         </p>
                         <ul className="space-y-6">
                             {["Multi-file Context Window", "Active Port Scanning", "Automated UI Generation"].map((item, i) => (
@@ -291,7 +291,7 @@ const Landing = () => {
                         {[
                             { name: "Satoshi N.", role: "Cryptographer", text: "Finally an IDE that understands the weight of zero-knowledge architecture. Revolutionary." },
                             { name: "Lexi V.", role: "UI Architect", text: "The generation speed is terrifying. I build entire modules with just two prompts now." },
-                            { name: "Marcus K.", role: "CTO @ Atlas", text: "Code Studio AI has reduced our prototyping time by at least 80%. It's non-negotiable." }
+                            { name: "Marcus K.", role: "CTO @ Atlas", text: "Faber has reduced our prototyping time by at least 80%. It's non-negotiable." }
                         ].map((t, i) => (
                             <div key={i} className="bg-white/2 border border-white/5 p-12 rounded-[50px] relative group hover:bg-white/5 transition-all">
                                 <div className="text-blue-500 text-6xl font-serif absolute top-8 left-10 opacity-20">"</div>
@@ -401,7 +401,7 @@ const Landing = () => {
                             <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center">
                                 <svg viewBox="0 0 24 24" className="w-6 h-6 fill-black"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4.5l5.5 5.5-5.5 5.5L6.5 12 12 6.5z" /></svg>
                             </div>
-                            <span className="text-xl font-black uppercase tracking-tighter">Code Studio AI</span>
+                            <span className="text-xl font-black uppercase tracking-tighter">Faber</span>
                         </div>
                         <p className="text-neutral-600 text-sm max-w-sm leading-relaxed mb-8">Building the world's most advanced autonomous workspace for high-performance development teams.</p>
                         <div className="flex gap-4">
@@ -425,7 +425,7 @@ const Landing = () => {
                 </div>
                 
                 <div className="max-w-7xl mx-auto pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-700">© 2026 CODEX LABS REPO SYSTEM</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-700">© 2026 FABER LABS REPO SYSTEM</p>
                     <div className="flex gap-10">
                          <span className="text-[10px] font-black text-neutral-800 uppercase tracking-widest">v1.4.2-PRO</span>
                          <span className="text-[10px] font-black text-neutral-800 uppercase tracking-widest">SHADOW-OS READY</span>

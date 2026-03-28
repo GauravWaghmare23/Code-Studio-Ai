@@ -253,7 +253,7 @@ const Project = () => {
                 <div className={`max-w-[85%] ${msg.mine ? "items-end" : "items-start"} flex flex-col`}>
                   {!msg.mine && i > 0 && messages[i-1].sender.id !== msg.sender.id && (
                     <span className="text-[10px] font-mono text-neutral-600 mb-1 ml-2 uppercase tracking-widest">
-                       {msg.isAi ? "CODEPILOT AI" : msg.sender.email.split('@')[0]}
+                       {msg.isAi ? "FABER AI" : msg.sender.email.split('@')[0]}
                     </span>
                   )}
                   <div className={`px-4 py-3 text-[13px] leading-relaxed shadow-xl transition-all hover:brightness-110 ${
@@ -397,8 +397,8 @@ const Project = () => {
                        <div className="w-24 h-24 bg-white/2 rounded-3xl border border-white/5 flex items-center justify-center mb-6">
                           <svg viewBox="0 0 24 24" className="w-10 h-10 fill-neutral-800"><path d="M12 2L2 12l10 10 10-10L12 2zm0 4.5l5.5 5.5-5.5 5.5L6.5 12 12 6.5z" /></svg>
                        </div>
-                       <h2 className="text-xl font-bold mb-2 tracking-tight">VIRTUAL WORKSPACE READY</h2>
-                       <p className="text-sm text-neutral-500 max-w-xs">Select a file from the explorer or ask AI to generate code for you.</p>
+                       <h2 className="text-xl font-bold mb-2 tracking-tight uppercase italic">Faber Forge Active</h2>
+                       <p className="text-sm text-neutral-500 max-w-xs">The forge is ready. Select a module from the explorer or use <span className="text-blue-500 font-bold">@ai</span> to begin crafting.</p>
                     </div>
                   )}
                </div>
